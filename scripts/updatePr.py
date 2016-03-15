@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 from urllib2 import urlopen, Request, HTTPError
 
 from lib.log import configureLog
-from lib.rest import post_comment
+from lib.rest import post_comment,unlock_thread
 
 def enrichJacoco(jacoco):
   result = {}
@@ -75,3 +75,4 @@ if __name__ == '__main__':
     print '\n'.join(comments)
   else:
     post_comment(args.repository, args.pullRequest, args.apiToken, '\n'.join(comments))
+    unlock_thread(args.repository, args.pullRequest, args.apiToken)

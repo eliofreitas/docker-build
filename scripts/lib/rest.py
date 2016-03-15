@@ -32,4 +32,37 @@ def post_comment(repo, pr, token, comment):
         charset = info.split('=')[-1]
     return json.loads(response.read().decode(charset, 'strict'))
   except HTTPError as e:
-    print e.read()
+    print (e.read())
+
+
+def lock_thread(repo, pr, token):
+    try:
+        url = ''.join(['https://api.github.com/repos/', repo, '/issues/', str(pr), '/lock'])
+        request = RequestWithMethod(url,method='PUT')
+        request.add_header('Authorization', 'token {}'.format(token))
+        request.add_header('Accept','application/vnd.github.the-key-preview+json')
+        response = urlopen(request, timeout=20)
+        return response.msg
+    except HTTPError as e:
+        print(e.read())
+
+
+def unlock_thread(repo, pr, token):
+    try:
+        url = ''.join(['https://api.github.com/repos/', repo, '/issues/', str(pr), '/lock'])
+        request = RequestWithMethod(url,method='DELETE')
+        request.add_header('Authorization', 'token {}'.format(token))
+        request.add_header('Accept','application/vnd.github.the-key-preview+json')
+        response = urlopen(request, timeout=20)
+        return response.msg
+    except HTTPError as e:
+        print(e.read())
+
+
+class RequestWithMethod(Request):
+  def __init__(self, *args, **kwargs):
+    self._method = kwargs.pop('method', None)
+    Request.__init__(self, *args, **kwargs)
+
+  def get_method(self):
+    return self._method if self._method else Request.get_method(self)

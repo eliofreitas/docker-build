@@ -8,7 +8,7 @@ from subprocess import call
 from urllib2 import urlopen, Request, HTTPError
 
 from lib.log import configureLog
-from lib.rest import get_pr_info, get_compare_info
+from lib.rest import get_pr_info, get_compare_info,lock_thread
 from lib.shell import ShellHelper
 
 class RepositoryFetcher(object):
@@ -46,6 +46,7 @@ class RepositoryFetcher(object):
       reverse_compare_info = get_compare_info(args.repository, baseLabel, headLabel, args.apiToken)
       originRepo = repositoryPrefix + args.originOwner + '/' + args.repository.split('/')[1] + '.git'
 
+    lock_thread(args.repository, args.pullRequest, args.apiToken)
     self.shell.call_and_check(['git', 'config', '--global', 'user.email', 'docker-buildguy@pentaho.com'], "Couldn't set email")
     self.shell.call_and_check(['git', 'config', '--global', 'user.name', 'docker-buildguy'], "Couldn't set email")
     self.shell.call_and_check(['git', 'clone', '--depth=' + str(int(reverse_compare_info['ahead_by']) + 10), '--branch', branch_to_apply, repository, 'build-dir/base' ], "Couldn't clone repo")
